@@ -1,0 +1,8 @@
+content:
+- In the middle of a word
+- Start or end of a word
+- Number parsing
+- Find a word with a given length
+- Remove extra spaces
+- Remove HTML tags
+- Remove comments

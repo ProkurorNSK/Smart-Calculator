@@ -19,9 +19,13 @@ public class Main {
                 case "":
                     continue;
                 default:
+                    text = text.replaceAll("\\+\\+|--", "");
+                    text = text.replaceAll("-\\s+", "-");
+                    text = text.replaceAll("\\+\\s+", "+");
                     String[] numbers = text.split("\\s+");
                     int result = 0;
                     for (String element: numbers) {
+//                        element = element.replaceAll("--", "");
                         result += Integer.parseInt(element);
                     }
                     System.out.println(result);
