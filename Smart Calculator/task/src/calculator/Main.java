@@ -1,8 +1,12 @@
 package calculator;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
+
+    private static final Map<String, Integer> variables = new HashMap<>();
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -21,23 +25,40 @@ public class Main {
                 default:
                     try {
                         if (text.matches("^/.*")) {
-                            throw new UnknownCommandException();
+                            throw new CalculatorException("Unknown command");
                         }
                         calculate(text);
-                    } catch (UnknownCommandException | InvalidExpressionException e) {
+                    } catch (CalculatorException e) {
                         System.out.println(e.getMessage());
                     }
             }
         }
     }
 
-    private static void calculate(String text) throws InvalidExpressionException {
+    private static void calculate(String text) throws CalculatorException {
         text = text.replaceAll("\\s+", "");
         text = text.replaceAll("--", "+");
         text = text.replaceAll("\\+{2,}", "+");
         text = text.replaceAll("\\+-|-\\+", "-");
-        if (!text.matches("^[-+].*")) {
-            text = "+" + text;
+
+        String[] parts = text.split("=");
+        if (parts.length == 2) {
+            if (parts[0].matches("[A-Za-z]+")) {
+                if (parts[1].matches("[-+]?\\d+")) {
+                    variables.put(parts[0], Integer.parseInt(parts[1]));
+                } else if (!parts[1].matches("[A-Za-z]+")) {
+                    throw new CalculatorException("Invalid assignment");
+                } else if (variables.containsKey(parts[1])) {
+                    variables.put(parts[0], variables.get(parts[1]));
+                } else {
+                    throw new CalculatorException("Unknown variable");
+                }
+            } else {
+                throw new CalculatorException("Invalid identifier");
+            }
+            return;
+        } else if (parts.length > 2) {
+            throw new CalculatorException("Invalid assignment");
         }
 
         text = text.replaceAll("-", " -");
@@ -47,29 +68,38 @@ public class Main {
         int result = 0;
         for (String element : numbers) {
 
-            if (!element.matches("^[+-].*")) {
-                throw new InvalidExpressionException();
+            if (element.matches("[-+]?\\d+")) {
+                try {
+                    result += Integer.parseInt(element);
+                } catch (NumberFormatException e) {
+                    throw new CalculatorException("Invalid expression");
+                }
+            } else if (element.matches("[A-Za-z]+")) {
+                if (variables.containsKey(element)) {
+                    result += variables.get(element);
+                } else {
+                    throw new CalculatorException("Unknown variable");
+                }
+            } else if (element.matches("[+-][A-Za-z]+")) {
+                String variable = element.substring(1);
+                int index = element.charAt(0) == '-' ? -1 : 1;
+                if (variables.containsKey(variable)) {
+                    result += index * variables.get(variable);
+                } else {
+                    throw new CalculatorException("Unknown variable");
+                }
+            } else {
+                throw new CalculatorException("Invalid expression");
             }
 
-            try {
-                result += Integer.parseInt(element);
-            } catch (NumberFormatException e) {
-                throw new InvalidExpressionException();
-            }
         }
 
         System.out.println(result);
     }
 }
 
-class UnknownCommandException extends RuntimeException {
-    public UnknownCommandException() {
-        super("Unknown command");
-    }
-}
-
-class InvalidExpressionException extends RuntimeException {
-    public InvalidExpressionException() {
-        super("Invalid expression");
+class CalculatorException extends RuntimeException {
+    public CalculatorException(String text) {
+        super(text);
     }
 }

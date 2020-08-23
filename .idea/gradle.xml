@@ -11,8 +11,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Problems/Counting words" />
+            <option value="$PROJECT_DIR$/Problems/Creating a map" />
             <option value="$PROJECT_DIR$/Problems/Find a word with a given length" />
             <option value="$PROJECT_DIR$/Problems/In the middle of a word" />
+            <option value="$PROJECT_DIR$/Problems/Multiset" />
             <option value="$PROJECT_DIR$/Problems/Number parsing" />
             <option value="$PROJECT_DIR$/Problems/Output elements" />
             <option value="$PROJECT_DIR$/Problems/Remove HTML tags" />
